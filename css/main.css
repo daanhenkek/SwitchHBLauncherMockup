@@ -1,0 +1,52 @@
+body {
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+}
+
+.mode-720p {
+    width: 1280px;
+    height: 720px;
+}
+
+.mode-1080p {
+    width: 1920px;
+    height: 1080px;
+}
+
+#appContainer {
+    margin: auto;
+
+    background: black;
+
+    transition: all 1s ease-in-out;
+}
+
+#appControls {
+    background: rgba(0, 0, 0, 0.36);
+    width: 10%;
+    height: 10%;
+
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.hidden {
+    opacity: 0;
+    display: hidden;
+}
+
+@font-face {
+    font-family: interUI;
+    src: url(../ttf/inter-ui.ttf);
+}
+
+@font-face {
+    font-family: interUIBold;
+    src: url(../ttf/inter-ui-bold.ttf);
+}

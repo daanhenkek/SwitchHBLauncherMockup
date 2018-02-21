@@ -1,36 +1,63 @@
 import {WaterWidget} from "./objects/Water";
-import {TitleScene} from "./TitleScene";
+import {TitleScene} from "./scenes/TitleScene";
+import {CreditsScene} from "./scenes/CreditsScene";
 
 class Menu {
     constructor() {
         this.container = document.querySelector('#appContainer');
-        this.sceneCanvas = document.querySelector('#sceneCanvas');
-        this.sceneContext = this.sceneCanvas.getContext('2d');
+
+        this.foregroundCanvas = document.querySelector('#foregroundCanvas');
+        this.foregroundContext = this.foregroundCanvas.getContext('2d');
+
+        this.backgroundCanvas = document.querySelector('#backgroundCanvas');
+        this.backgroundContext = this.backgroundCanvas.getContext('2d');
 
         this.waterWidget = new WaterWidget();
 
         this.scenes = [
-            new TitleScene()
+            new TitleScene(),
+            new CreditsScene()
         ];
         this.currentScene = 0;
 
         this.setResolution(1280, 720);
+        this.waterWidget.baseHeight = this.waterWidget.canvas.height;
+        this.scenes[this.currentScene].transitionTo(this);
     }
 
     setResolution(width, height) {
         this.width = width;
         this.height = height;
 
-        this.sceneCanvas.width = width;
-        this.sceneCanvas.height = height;
+        this.foregroundCanvas.width = width;
+        this.foregroundCanvas.height = height;
+
+        this.backgroundCanvas.width = width;
+        this.backgroundCanvas.height = height;
 
         this.waterWidget.setResolution(width, height);
-        this.scenes[this.currentScene].transitionTo(this);
     }
 
     draw() {
+        this.scenes[this.currentScene].drawBackground(this.backgroundCanvas, this.backgroundContext);
         this.waterWidget.draw();
-        this.scenes[this.currentScene].draw(this.sceneCanvas, this.sceneContext);
+        this.scenes[this.currentScene].drawForeground(this.foregroundCanvas, this.foregroundContext);
+    }
+
+    switchScenes(to) {
+        let previousScene = this.scenes[this.currentScene];
+        let newScene = this.scenes[to];
+
+        previousScene.transitionFrom(this, () => {
+            this.currentScene = to;
+            newScene.transitionTo(this, () => {
+
+            });
+        });
+    }
+
+    handleInput(key) {
+        this.scenes[this.currentScene].handleInput(key);
     }
 }
 
@@ -43,6 +70,31 @@ window.addEventListener('load', () => {
     }
 
     requestAnimationFrame(tick);
+
+    document.addEventListener('keypress', event => {
+        let key;
+
+        switch (event.which) {
+            case 13:
+                key = 'start';
+                break;
+            case 97:
+                key = 'a';
+                break;
+            case 98:
+                key = 'b';
+                break;
+
+            default:
+                console.log(event.which);
+                break;
+        }
+
+        console.log(key);
+
+        if (key !== undefined)
+            window.menu.handleInput(key);
+    });
 
     let waveHeightSlider = document.querySelector('#waveHeight');
     waveHeightSlider.addEventListener('click', () => {

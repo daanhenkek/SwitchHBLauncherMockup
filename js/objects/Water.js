@@ -16,38 +16,6 @@ export class WaterWidget {
         this.isAnimating = false;
     }
 
-    animateTo(height, time) {
-        let self = this;
-
-        if (time === undefined)
-            time = 3000;
-
-        this.animationQueue.push(anime({
-            targets: this,
-            baseHeight: height,
-            duration: time,
-            delay: 300,
-            elasticity: 200,
-            autoplay: false,
-            complete: () => {
-                console.log(height);
-                self.baseHeight = height;
-                console.log("DONE");
-                if (self.animationQueue.length > 0) {
-                    let animation = self.animationQueue.shift();
-                    animation.play();
-                    console.log(animation.baseHeight);
-                } else {
-                    self.isAnimating = false;
-                }
-            }
-        }));
-    }
-
-    animateToTop() {
-        this.animateTo(this.canvas.height, 2000);
-    }
-
     setResolution(width, height) {
         this.canvas.width = width;
         this.canvas.height = height;
@@ -56,14 +24,6 @@ export class WaterWidget {
     }
 
     draw() {
-        if (this.isAnimating === false && this.animationQueue.length > 0) {
-            console.log("PLAYING");
-            let anim = this.animationQueue.shift();
-            anim.play();
-            console.log(anim.baseHeight);
-            this.isAnimating = true;
-        }
-
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.waves.forEach((wave) => {

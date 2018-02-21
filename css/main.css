@@ -4,8 +4,6 @@ body {
 
     margin: 0;
     padding: 0;
-
-    overflow: hidden;
 }
 
 .mode-720p {
@@ -40,10 +38,18 @@ body {
     width: 100%;
 }
 
-#sceneCanvas {
+#backgroundCanvas {
     position: absolute;
     bottom: 0;
     z-index: 0;
+
+    width: 100%;
+}
+
+#foregroundCanvas {
+    position: absolute;
+    bottom: 0;
+    z-index: 2;
 
     width: 100%;
 }

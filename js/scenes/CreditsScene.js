@@ -1,11 +1,13 @@
 import {LogoWidget} from "../objects/Logo";
 import {Scene} from "../Scene";
+import {ClockWidget} from "../objects/Clock";
 
 export class CreditsScene extends Scene {
     constructor() {
-        super(20);
+        super(35);
 
         this.logo = new LogoWidget();
+        this.clock = new ClockWidget(true);
     }
 
     drawForeground(canvas, context) {
@@ -16,9 +18,8 @@ export class CreditsScene extends Scene {
 
     drawBackground(canvas, context) {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = 'blue';
-        context.fillRect(5, 10, 1100, 700);
-        //this.logo.draw(canvas, context);
+        //context.fillRect(5, 10, 1100, 700);
+        this.clock.draw(canvas, context);
     }
 
     handleInput(key) {

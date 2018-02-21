@@ -74,8 +74,9 @@ window.addEventListener('load', () => {
     document.addEventListener('keypress', event => {
         let key;
 
-        switch (event.which) {
-            case 13:
+        let keyCode = event.charCode | event.key.charCodeAt(0);
+        switch (keyCode) {
+            case 69:
                 key = 'start';
                 break;
             case 97:
@@ -86,7 +87,7 @@ window.addEventListener('load', () => {
                 break;
 
             default:
-                console.log(event.which);
+                console.log(keyCode);
                 break;
         }
 

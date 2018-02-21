@@ -8,7 +8,7 @@ let dns = dnsd.createServer((req, res) => {
 });
 
 let server = http.createServer((req, res) => {
-    res.end('<a href="http://192.168.1.7:8080">Click meh</a>')
+    res.end('<a href="http://192.168.1.7:1337">Click meh</a>')
 });
 
 dns.on('error', (err) => {

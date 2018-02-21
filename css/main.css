@@ -20,25 +20,32 @@ body {
 
 #appContainer {
     margin: auto;
+    position: relative;
 
-    background: black;
+    background: #2D3742;
 
     transition: all 1s ease-in-out;
 }
 
-#appControls {
-    background: rgba(0, 0, 0, 0.36);
-    width: 10%;
-    height: 10%;
-
-    position: fixed;
-    left: 0;
-    top: 0;
-}
-
 .hidden {
     opacity: 0;
-    display: hidden;
+    display: none;
+}
+
+#waterCanvas {
+    position: absolute;
+    bottom: 0;
+    z-index: 1;
+
+    width: 100%;
+}
+
+#sceneCanvas {
+    position: absolute;
+    bottom: 0;
+    z-index: 0;
+
+    width: 100%;
 }
 
 @font-face {

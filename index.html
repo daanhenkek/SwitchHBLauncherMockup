@@ -6,20 +6,18 @@
 
     <link rel="stylesheet" href="css/main.css">
 
+    <script src="lib/anime.js"></script>
     <script src="dist/bundle.js"></script>
 </head>
 <body>
 
-<!-- All graphics are done in SVG so they can be reused for the actual launcher, all the positioning will be done in CSS because that will need to be rewritten for the actual app anyway -->
-
 <div id="appContainer" class="mode-720p">
-    <canvas id="canvas" width="1280" height="720"></canvas>
+    <canvas id="sceneCanvas"></canvas>
+    <canvas id="waterCanvas"></canvas>
 </div>
 
-<!--<div id="appControls" class="hidden">-->
-    <!--<button id="resizeButton">Resize</button>-->
-    <!--<button id="hourButton">Time</button>-->
-<!--</div>-->
+<input type="range" min="0" max="720" id="waveHeight">
+<input type="button" value="Woosh" id="waveAnimation">
 
 </body>
 </html>

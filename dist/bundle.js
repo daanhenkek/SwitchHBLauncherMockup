@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "dist";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -70,9 +70,160 @@
 "use strict";
 
 
-var _Water = __webpack_require__(1);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.LogoWidget = void 0;
 
-var _TitleScene = __webpack_require__(2);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var LogoWidget =
+/*#__PURE__*/
+function () {
+  function LogoWidget() {
+    _classCallCheck(this, LogoWidget);
+
+    this.image = new Image();
+    this.image.src = 'gfx/logo_wip.png';
+  }
+
+  _createClass(LogoWidget, [{
+    key: "draw",
+    value: function draw(canvas, context) {
+      var middle_x = canvas.width / 2;
+      var middle_y = canvas.height / 2.5;
+      var width, height;
+      var imageAspect = this.image.width / this.image.height;
+      var canvasAspect = canvas.width / canvas.height;
+
+      if (imageAspect < canvasAspect) {
+        height = canvas.height;
+        width = this.image.width * (height / this.image.height);
+      } else {
+        width = canvas.width;
+        height = this.image.height * (width / this.image.width);
+      }
+
+      width *= 0.7;
+      height *= 0.7;
+      context.fillStyle = 'blue';
+      context.drawImage(this.image, middle_x - width / 2, middle_y - height / 2, width, height);
+    }
+  }]);
+
+  return LogoWidget;
+}();
+
+exports.LogoWidget = LogoWidget;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Scene = void 0;
+
+var _lib = __webpack_require__(5);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var Scene =
+/*#__PURE__*/
+function () {
+  function Scene(waterHeight) {
+    _classCallCheck(this, Scene);
+
+    this.doUpdate = false;
+    this.doInput = false;
+    this.waterHeight = waterHeight;
+  }
+
+  _createClass(Scene, [{
+    key: "startUpdating",
+    value: function startUpdating() {
+      this.doUpdate = true;
+    }
+  }, {
+    key: "stopUpdating",
+    value: function stopUpdating() {
+      this.doUpdate = false;
+    }
+  }, {
+    key: "transitionTo",
+    value: function transitionTo(menu, callback) {
+      var _this = this;
+
+      var length = 3000;
+      menu.foregroundCanvas.style.display = 'block';
+      (0, _lib.animate)('easeLinear', length / 10, 0, 1, function (value) {
+        menu.foregroundCanvas.style.opacity = value;
+      });
+      (0, _lib.animate)("easeOutElastic", length, menu.waterWidget.baseHeight, menu.waterWidget.canvas.height / 100 * this.waterHeight, function (value) {
+        menu.waterWidget.baseHeight = value;
+      }, function () {
+        _this.startUpdating();
+
+        _this.doInput = true;
+        if (callback) callback();
+      });
+    }
+  }, {
+    key: "handleInput",
+    value: function handleInput(key) {
+      console.log(key);
+    }
+  }, {
+    key: "transitionFrom",
+    value: function transitionFrom(menu, callback) {
+      var _this2 = this;
+
+      var length = 1500;
+      this.doInput = false;
+      (0, _lib.animate)('easeLinear', length / 10, 1, 0, function (value) {
+        menu.foregroundCanvas.style.opacity = value;
+      }, function () {
+        menu.foregroundCanvas.style.display = 'none';
+      });
+      (0, _lib.animate)("easeInOutElastic", length, menu.waterWidget.baseHeight, menu.waterWidget.canvas.height, function (value) {
+        menu.waterWidget.baseHeight = value;
+      }, function () {
+        _this2.stopUpdating();
+
+        if (callback) callback();
+      });
+    }
+  }]);
+
+  return Scene;
+}();
+
+exports.Scene = Scene;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _Water = __webpack_require__(3);
+
+var _TitleScene = __webpack_require__(4);
+
+var _CreditsScene = __webpack_require__(6);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -87,12 +238,16 @@ function () {
     _classCallCheck(this, Menu);
 
     this.container = document.querySelector('#appContainer');
-    this.sceneCanvas = document.querySelector('#sceneCanvas');
-    this.sceneContext = this.sceneCanvas.getContext('2d');
+    this.foregroundCanvas = document.querySelector('#foregroundCanvas');
+    this.foregroundContext = this.foregroundCanvas.getContext('2d');
+    this.backgroundCanvas = document.querySelector('#backgroundCanvas');
+    this.backgroundContext = this.backgroundCanvas.getContext('2d');
     this.waterWidget = new _Water.WaterWidget();
-    this.scenes = [new _TitleScene.TitleScene()];
+    this.scenes = [new _TitleScene.TitleScene(), new _CreditsScene.CreditsScene()];
     this.currentScene = 0;
     this.setResolution(1280, 720);
+    this.waterWidget.baseHeight = this.waterWidget.canvas.height;
+    this.scenes[this.currentScene].transitionTo(this);
   }
 
   _createClass(Menu, [{
@@ -100,16 +255,35 @@ function () {
     value: function setResolution(width, height) {
       this.width = width;
       this.height = height;
-      this.sceneCanvas.width = width;
-      this.sceneCanvas.height = height;
+      this.foregroundCanvas.width = width;
+      this.foregroundCanvas.height = height;
+      this.backgroundCanvas.width = width;
+      this.backgroundCanvas.height = height;
       this.waterWidget.setResolution(width, height);
-      this.scenes[this.currentScene].transitionTo(this);
     }
   }, {
     key: "draw",
     value: function draw() {
+      this.scenes[this.currentScene].drawBackground(this.backgroundCanvas, this.backgroundContext);
       this.waterWidget.draw();
-      this.scenes[this.currentScene].draw(this.sceneCanvas, this.sceneContext);
+      this.scenes[this.currentScene].drawForeground(this.foregroundCanvas, this.foregroundContext);
+    }
+  }, {
+    key: "switchScenes",
+    value: function switchScenes(to) {
+      var _this = this;
+
+      var previousScene = this.scenes[this.currentScene];
+      var newScene = this.scenes[to];
+      previousScene.transitionFrom(this, function () {
+        _this.currentScene = to;
+        newScene.transitionTo(_this, function () {});
+      });
+    }
+  }, {
+    key: "handleInput",
+    value: function handleInput(key) {
+      this.scenes[this.currentScene].handleInput(key);
     }
   }]);
 
@@ -125,6 +299,31 @@ window.addEventListener('load', function () {
   }
 
   requestAnimationFrame(tick);
+  document.addEventListener('keypress', function (event) {
+    var key;
+    var keyCode = event.charCode | event.key.charCodeAt(0);
+
+    switch (keyCode) {
+      case 69:
+        key = 'start';
+        break;
+
+      case 97:
+        key = 'a';
+        break;
+
+      case 98:
+        key = 'b';
+        break;
+
+      default:
+        console.log(keyCode);
+        break;
+    }
+
+    console.log(key);
+    if (key !== undefined) window.menu.handleInput(key);
+  });
   var waveHeightSlider = document.querySelector('#waveHeight');
   waveHeightSlider.addEventListener('click', function () {
     window.menu.waterWidget.baseHeight = waveHeightSlider.value;
@@ -139,7 +338,7 @@ window.addEventListener('load', function () {
 // };
 
 /***/ }),
-/* 1 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -172,38 +371,6 @@ function () {
   }
 
   _createClass(WaterWidget, [{
-    key: "animateTo",
-    value: function animateTo(height, time) {
-      var self = this;
-      if (time === undefined) time = 3000;
-      this.animationQueue.push(anime({
-        targets: this,
-        baseHeight: height,
-        duration: time,
-        delay: 300,
-        elasticity: 200,
-        autoplay: false,
-        complete: function complete() {
-          console.log(height);
-          self.baseHeight = height;
-          console.log("DONE");
-
-          if (self.animationQueue.length > 0) {
-            var animation = self.animationQueue.shift();
-            animation.play();
-            console.log(animation.baseHeight);
-          } else {
-            self.isAnimating = false;
-          }
-        }
-      }));
-    }
-  }, {
-    key: "animateToTop",
-    value: function animateToTop() {
-      this.animateTo(this.canvas.height, 2000);
-    }
-  }, {
     key: "setResolution",
     value: function setResolution(width, height) {
       this.canvas.width = width;
@@ -214,14 +381,6 @@ function () {
     key: "draw",
     value: function draw() {
       var _this = this;
-
-      if (this.isAnimating === false && this.animationQueue.length > 0) {
-        console.log("PLAYING");
-        var anim = this.animationQueue.shift();
-        anim.play();
-        console.log(anim.baseHeight);
-        this.isAnimating = true;
-      }
 
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.waves.forEach(function (wave) {
@@ -281,7 +440,7 @@ function colorToGradient(color1, color2, context, canvas) {
 }
 
 /***/ }),
-/* 2 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -292,7 +451,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.TitleScene = void 0;
 
-var _Logo = __webpack_require__(3);
+var _Logo = __webpack_require__(0);
+
+var _Scene2 = __webpack_require__(1);
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -300,36 +463,57 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 var TitleScene =
 /*#__PURE__*/
-function () {
+function (_Scene) {
+  _inherits(TitleScene, _Scene);
+
   function TitleScene() {
+    var _this;
+
     _classCallCheck(this, TitleScene);
 
-    this.logo = new _Logo.LogoWidget();
+    _this = _possibleConstructorReturn(this, (TitleScene.__proto__ || Object.getPrototypeOf(TitleScene)).call(this, -9));
+    _this.logo = new _Logo.LogoWidget();
+    return _this;
   }
 
   _createClass(TitleScene, [{
-    key: "transitionTo",
-    value: function transitionTo(menu) {
-      console.log();
-      menu.waterWidget.animateTo(menu.waterWidget.canvas.height / 15);
+    key: "drawForeground",
+    value: function drawForeground(canvas, context) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
     }
   }, {
-    key: "draw",
-    value: function draw(canvas, context) {
+    key: "drawBackground",
+    value: function drawBackground(canvas, context) {
       context.clearRect(0, 0, canvas.width, canvas.height);
       this.logo.draw(canvas, context);
+    }
+  }, {
+    key: "handleInput",
+    value: function handleInput(key) {
+      if (!this.doInput) return;
+
+      switch (key) {
+        case "a":
+        case "start":
+          window.menu.switchScenes(1);
+          break;
+      }
     }
   }]);
 
   return TitleScene;
-}();
+}(_Scene2.Scene);
 
 exports.TitleScene = TitleScene;
 
 /***/ }),
-/* 3 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -338,7 +522,168 @@ exports.TitleScene = TitleScene;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.LogoWidget = void 0;
+exports.animate = animate;
+exports.easeInBounce = easeInBounce;
+exports.easeOutBounce = easeOutBounce;
+exports.easeInOutBounce = easeInOutBounce;
+exports.easeLinear = easeLinear;
+exports.easeLinearHelper = easeLinearHelper;
+exports.easeInElastic = easeInElastic;
+exports.easeOutElastic = easeOutElastic;
+exports.easeInOutElastic = easeInOutElastic;
+
+function animate(type, duration, from, to, callback, callbackDone) {
+  var startTime = Date.now();
+  var easeFunction;
+
+  switch (type) {
+    case "easeInBounce":
+      easeFunction = easeInBounce;
+      break;
+
+    case "easeOutBounce":
+      easeFunction = easeOutBounce;
+      break;
+
+    case "easeInOutBounce":
+      easeFunction = easeInOutBounce;
+      break;
+
+    case "easeInElastic":
+      easeFunction = easeInElastic;
+      break;
+
+    case "easeOutElastic":
+      easeFunction = easeOutElastic;
+      break;
+
+    case "easeInOutElastic":
+      easeFunction = easeInOutElastic;
+      break;
+
+    case "easeLinear":
+      easeFunction = easeLinear;
+      break;
+
+    default:
+      return;
+  }
+
+  function step() {
+    var nowTime = Date.now(); //console.log(from, to, duration, nowTime, startTime, nowTime - startTime);
+
+    if (nowTime - startTime >= duration) {
+      clearInterval(interval);
+      if (callbackDone) callbackDone();
+    }
+
+    var n = easeLinearHelper(from, to, easeFunction((nowTime - startTime) / duration)); //console.log(n);
+
+    callback(n);
+  }
+
+  var interval = setInterval(step, 1000 / 60);
+}
+
+function easeInBounce(n) {
+  return 1 - easeOutBounce(1 - n);
+}
+
+function easeOutBounce(n) {
+  if (n < 1 / 2.75) {
+    return 7.5625 * n * n;
+  } else if (n < 2 / 2.75) {
+    return 7.5625 * (n -= 1.5 / 2.75) * n + 0.75;
+  } else if (n < 2.5 / 2.75) {
+    return 7.5625 * (n -= 2.25 / 2.75) * n + 0.9375;
+  } else {
+    return 7.5625 * (n -= 2.625 / 2.75) * n + 0.984375;
+  }
+}
+
+function easeInOutBounce(n) {
+  if (n < .5) return easeInBounce(n * 2) * .5;
+  return easeOutBounce(n * 2 - 1) * .5 + .5;
+}
+
+function easeLinear(n) {
+  return n;
+}
+
+function easeLinearHelper(from, to, n) {
+  //console.log(n);
+  return (1 - n) * from + n * to;
+}
+
+function easeInElastic(n) {
+  var s,
+      a = 0.1,
+      p = 0.8;
+  if (n === 0) return 0;
+  if (n === 1) return 1;
+
+  if (!a || a < 1) {
+    a = 1;
+    s = p / 4;
+  } else s = p * Math.asin(1 / a) / (2 * Math.PI);
+
+  return -(a * Math.pow(2, 10 * (n -= 1)) * Math.sin((n - s) * (2 * Math.PI) / p));
+}
+
+;
+
+function easeOutElastic(n) {
+  var s,
+      a = 0.1,
+      p = 0.8;
+  if (n === 0) return 0;
+  if (n === 1) return 1;
+
+  if (!a || a < 1) {
+    a = 1;
+    s = p / 4;
+  } else s = p * Math.asin(1 / a) / (2 * Math.PI);
+
+  return a * Math.pow(2, -10 * n) * Math.sin((n - s) * (2 * Math.PI) / p) + 1;
+}
+
+;
+
+function easeInOutElastic(n) {
+  var s,
+      a = 0.1,
+      p = 0.8;
+  if (n === 0) return 0;
+  if (n === 1) return 1;
+
+  if (!a || a < 1) {
+    a = 1;
+    s = p / 4;
+  } else s = p * Math.asin(1 / a) / (2 * Math.PI);
+
+  if ((n *= 2) < 1) return -0.5 * (a * Math.pow(2, 10 * (n -= 1)) * Math.sin((n - s) * (2 * Math.PI) / p));
+  return a * Math.pow(2, -10 * (n -= 1)) * Math.sin((n - s) * (2 * Math.PI) / p) * 0.5 + 1;
+}
+
+;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.CreditsScene = void 0;
+
+var _Logo = __webpack_require__(0);
+
+var _Scene2 = __webpack_require__(1);
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -346,44 +691,56 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var LogoWidget =
-/*#__PURE__*/
-function () {
-  function LogoWidget() {
-    _classCallCheck(this, LogoWidget);
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-    this.image = new Image();
-    this.image.src = 'gfx/logo_wip.png';
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CreditsScene =
+/*#__PURE__*/
+function (_Scene) {
+  _inherits(CreditsScene, _Scene);
+
+  function CreditsScene() {
+    var _this;
+
+    _classCallCheck(this, CreditsScene);
+
+    _this = _possibleConstructorReturn(this, (CreditsScene.__proto__ || Object.getPrototypeOf(CreditsScene)).call(this, 10));
+    _this.logo = new _Logo.LogoWidget();
+    return _this;
   }
 
-  _createClass(LogoWidget, [{
-    key: "draw",
-    value: function draw(canvas, context) {
-      var middle_x = canvas.width / 2;
-      var middle_y = canvas.height / 2.5;
-      var width, height;
-      var imageAspect = this.image.width / this.image.height;
-      var canvasAspect = canvas.width / canvas.height;
-
-      if (imageAspect < canvasAspect) {
-        height = canvas.height;
-        width = this.image.width * (height / this.image.height);
-      } else {
-        width = canvas.width;
-        height = this.image.height * (width / this.image.width);
-      }
-
-      width *= 0.7;
-      height *= 0.7;
+  _createClass(CreditsScene, [{
+    key: "drawForeground",
+    value: function drawForeground(canvas, context) {
+      context.clearRect(0, 0, canvas.width, canvas.height); // context.fillStyle = 'red';
+      // context.fillRect(500, 100, 200, 400);
+    }
+  }, {
+    key: "drawBackground",
+    value: function drawBackground(canvas, context) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
       context.fillStyle = 'blue';
-      context.drawImage(this.image, middle_x - width / 2, middle_y - height / 2, width, height);
+      context.fillRect(5, 10, 1100, 700); //this.logo.draw(canvas, context);
+    }
+  }, {
+    key: "handleInput",
+    value: function handleInput(key) {
+      if (!this.doInput) return;
+
+      switch (key) {
+        case "b":
+          window.menu.switchScenes(0);
+          break;
+      }
     }
   }]);
 
-  return LogoWidget;
-}();
+  return CreditsScene;
+}(_Scene2.Scene);
 
-exports.LogoWidget = LogoWidget;
+exports.CreditsScene = CreditsScene;
 
 /***/ })
 /******/ ]);
+//# sourceMappingURL=bundle.js.map

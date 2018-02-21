@@ -3,7 +3,7 @@ import {Scene} from "../Scene";
 
 export class TitleScene extends Scene{
     constructor() {
-        super(-9);
+        super(10);
 
         this.logo = new LogoWidget();
     }

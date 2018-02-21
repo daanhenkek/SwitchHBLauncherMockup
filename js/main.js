@@ -36,6 +36,8 @@ class Menu {
         this.backgroundCanvas.height = height;
 
         this.waterWidget.setResolution(width, height);
+
+        this.switchScenes(this.currentScene);
     }
 
     draw() {
@@ -102,14 +104,20 @@ window.addEventListener('load', () => {
         window.menu.waterWidget.baseHeight = waveHeightSlider.value;
     });
 
-    let up = false;
-    document.querySelector('#waveAnimation').addEventListener('click', () => {
-        if (up)
-            window.menu.scenes[window.menu.currentScene].transitionTo(window.menu);
-        else
-            window.menu.waterWidget.animateToTop();
+    let hd = false;
+    document.querySelector('#toggleRes').addEventListener('click', () => {
+        if (hd) {
+            window.menu.container.classList.toggle("mode-720p");
+            window.menu.container.classList.toggle("mode-1080p");
+            window.menu.setResolution(1280, 720);
+        }
+        else{
+            window.menu.container.classList.toggle("mode-1080p");
+            window.menu.container.classList.toggle("mode-720p");
+            window.menu.setResolution(1920, 1080);
+        }
 
-        up = !up;
+        hd = !hd;
     });
 });
 

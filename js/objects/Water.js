@@ -4,10 +4,10 @@ export class WaterWidget {
         this.context = this.canvas.getContext('2d');
 
         this.waves = [
-            new Wave("#516EAD", "#516EAD", 0, -17, 160),
-            new Wave("#6783C9", "#6783C9", 8, 13.5, 156),
-            new Wave("#429A9F", "#429A9F", 14, -12.5, 152),
-            new Wave("#67ffff", "#5cb0e2", 24, 11, 148)
+            new Wave("#516EAD", "#516EAD", 0, -17, 12),
+            new Wave("#6783C9", "#6783C9", 8, 13.5, 8),
+            new Wave("#429A9F", "#429A9F", 14, -12.5, 4),
+            new Wave("#67ffff", "#5cb0e2", 24, 11, 0)
         ];
 
         this.timer = 0;
